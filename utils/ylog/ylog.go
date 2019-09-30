@@ -1,14 +1,14 @@
-package utils
+package ylog
 
 import (
 	"fmt"
-	log2 "log"
+	"log"
 	"os"
 	"time"
 )
 
 var (
-	logger *log2.Logger
+	logger *log.Logger
 )
 
 //初始化log
@@ -24,14 +24,13 @@ func init()  {
 			return
 		}
 	}
-
 	filename := fmt.Sprintf("%s.%s",time.Now().Format("2006-01-02"),"log")
-	file, err := os.OpenFile("../runtime/log/"+filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	file, err := os.OpenFile(logDir+filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		fmt.Println("init log err:",err)
 		return
 	}
-	logger = log2.New(file, "logger: ", log2.Lshortfile)
+	logger = log.New(file, "logger: ", log.Lshortfile)
 }
 
 //记录信息到日志

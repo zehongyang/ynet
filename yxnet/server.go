@@ -1,5 +1,10 @@
 package yxnet
 
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+)
 
 var (
 	server *Server
@@ -10,18 +15,38 @@ type Server struct {
 	Net string
 	//端口
 	Port uint32
+	//读超时
+	ReadTimeOut uint32
+	//写超时
+	WriteTimeOut uint32
 }
 
 func init()  {
 	server = &Server{
 		Net:"tcp",
 		Port:8999,
+		ReadTimeOut:60,
+		WriteTimeOut:10,
 	}
+	loadConfig()
 }
 
 
 func NewServer() *Server {
 	return server
+}
+
+//加载配置
+func loadConfig()  {
+	bytes, err := ioutil.ReadFile("./conf/config.json")
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(bytes, server)
+	if err != nil {
+		fmt.Println("json unmarshal err:",err)
+		return
+	}
 }
 
 //服务开始
