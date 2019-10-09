@@ -34,6 +34,8 @@ type Server struct {
 	OnMessage func(connection iyxnetface.IConnection,msg []byte)
 	//客户端关闭处理
 	OnClose func(connection iyxnetface.IConnection)
+	//客户端管理
+	ConnManager iyxnetface.IConnManager
 }
 
 func init()  {
@@ -45,6 +47,7 @@ func init()  {
 		WriteTimeOut:10,
 		ServerName:"YNET",
 		Version:1.0,
+		ConnManager:NewConnManager(),
 	}
 	loadConfig()
 }

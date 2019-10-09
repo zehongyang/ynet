@@ -29,7 +29,7 @@ func (c *Connection) Start()  {
 	go c.startRead()
 	go c.startWrite()
 }
-
+//客户端读
 func (c *Connection) startRead ()  {
 	defer c.Stop()
 	var buf = make([]byte,4096)
@@ -42,7 +42,7 @@ func (c *Connection) startRead ()  {
 		go c.TcpServer.CallOnMessage(c,buf[:n])
 	}
 }
-
+//客户端写
 func (c *Connection) startWrite()  {
 	for  {
 		select {
@@ -59,8 +59,19 @@ func (c *Connection) startWrite()  {
 	}
 }
 
+//获取客户端id
+func (c *Connection) GetConnId () uint64 {
+	return c.ConnId
+}
+
+
 
 //客户端结束
 func (c *Connection) Stop()  {
-	
+	//关闭客户端
+	c.Conn.Close()
+	//关闭管道
+	close(c.MsgChan)
+	close(c.ExitChan)
+
 }
