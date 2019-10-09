@@ -1,7 +1,13 @@
 package iyxnetface
 
 type IServer interface {
-	Start() error
+	Start()
 	Stop() error
-	Serve() error
+	Serve()
+	SetOnConnect(func(IConnection))
+	SetOnMessage(func(IConnection,[]byte))
+	SetOnClose(func(IConnection))
+	CallOnConnect(IConnection)
+	CallOnMessage(IConnection,[]byte)
+	CallOnClose(IConnection)
 }
