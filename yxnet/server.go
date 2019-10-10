@@ -23,9 +23,9 @@ type Server struct {
 	//端口
 	Port uint32
 	//读超时
-	ReadTimeOut uint32
+	ReadTimeOut int
 	//写超时
-	WriteTimeOut uint32
+	WriteTimeOut int
 	//host
 	Host string
 	//客户端连接处理
@@ -36,6 +36,8 @@ type Server struct {
 	OnClose func(connection iyxnetface.IConnection)
 	//客户端管理
 	ConnManager iyxnetface.IConnManager
+	//任务队列
+	TaskQueue map[int]chan iyxnetface.IMessage
 }
 
 func init()  {
@@ -48,6 +50,7 @@ func init()  {
 		ServerName:"YNET",
 		Version:1.0,
 		ConnManager:NewConnManager(),
+		TaskQueue:make(map[int]chan iyxnetface.IMessage),
 	}
 	loadConfig()
 }
@@ -82,6 +85,7 @@ func (s *Server) Start(){
 		if err != nil {
 			log.Fatal("listen tcp err:",err)
 		}
+		s.InitTask()
 		var connId uint64
 		//监听连接
 		for  {
@@ -91,6 +95,7 @@ func (s *Server) Start(){
 			}
 			connId++
 			connection := NewConnection(connId, s, conn)
+			s.ConnManager.AddConnection(connection)
 			go func() {
 				s.CallOnConnect(connection)
 				connection.Start()
@@ -100,10 +105,6 @@ func (s *Server) Start(){
 	select {}
 }
 
-//服务停止
-func (s *Server) Stop() error{
-	return nil
-}
 
 //启动服务
 func (s *Server) Serve(){
@@ -140,4 +141,78 @@ func (s *Server) CallOnClose (connection iyxnetface.IConnection)  {
 	if s.OnClose != nil {
 		s.OnClose(connection)
 	}
+}
+//处理消息
+func (s *Server) DoMessageHandler (msgChan chan iyxnetface.IMessage)  {
+	for  {
+		select {
+		case msg,ok := <-msgChan:
+			if !ok {
+				return
+			}
+			s.CallOnMessage(msg.GetConnection(),msg.GetMessage())
+		}
+	}
+}
+//将消息分发到管道
+func (s *Server) AssignMessage (message iyxnetface.IMessage)  {
+	index := int(message.GetConnection().GetConnId() % uint64(len(s.TaskQueue)))
+	s.TaskQueue[index] <- message
+}
+
+//初始10个协程来分别处理对应管道的数据
+func (s *Server) InitTask ()  {
+	for i := 0; i < 10 ; i++  {
+		s.TaskQueue[i] = make(chan iyxnetface.IMessage)
+		go s.DoMessageHandler(s.TaskQueue[i])
+	}
+}
+//获取客户端管理
+func (s *Server) GetConnManager () iyxnetface.IConnManager  {
+	return s.ConnManager
+}
+
+//将数据发送给指定uid
+func (s *Server) SendToUid (uid int,msg []byte){
+	s.ConnManager.GetConnMap().Range(func(key, value interface{}) bool {
+		if conn,ok := value.(iyxnetface.IConnection);ok{
+			if cuid,ok := conn.GetProperty()["uid"];ok {
+				if cuid == uid {
+					conn.Write(msg)
+				}
+			}
+		}
+		return true
+	})
+}
+
+//将数据发送到指定组
+func (s *Server) SendToGroup (groupId int,msg []byte) {
+	s.ConnManager.GetConnMap().Range(func(key, value interface{}) bool {
+		if conn,ok := value.(iyxnetface.IConnection);ok{
+			if cgroupId,ok := conn.GetProperty()["groupId"];ok {
+				if cgroupId == groupId {
+					conn.Write(msg)
+				}
+			}
+		}
+		return true
+	})
+}
+//将数据发送给全部客户端
+func (s *Server) SendToAll (msg []byte){
+	s.ConnManager.GetConnMap().Range(func(key, value interface{}) bool {
+		if conn,ok := value.(iyxnetface.IConnection);ok{
+			conn.Write(msg)
+		}
+		return true
+	})
+}
+//获取读超时
+func (s *Server) GetReadTimeOut () int  {
+	return s.ReadTimeOut
+}
+//获取写超时
+func (s *Server) GetWriteTimeOut () int {
+	return s.WriteTimeOut
 }

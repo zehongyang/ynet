@@ -20,3 +20,8 @@ func (c *ConnManager) AddConnection (connection iyxnetface.IConnection)  {
 func (c *ConnManager) RemoveConnection(connection iyxnetface.IConnection){
 	c.ConnMap.Delete(connection.GetConnId())
 }
+
+//获取客户端管理
+func (c *ConnManager) GetConnMap () sync.Map  {
+	return c.ConnMap
+}
