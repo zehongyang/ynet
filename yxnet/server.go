@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"my-admin/pkg/log"
+	"log"
 	"net"
 	"ynet/iyxnetface"
 )
@@ -75,7 +75,7 @@ func loadConfig()  {
 
 //服务开始
 func (s *Server) Start(){
-	fmt.Printf("Server %s Version %f listening on Port %d\n",s.ServerName,s.Version,s.Port)
+	fmt.Printf("Server %s Version %.1f listening on Port %d\n",s.ServerName,s.Version,s.Port)
 	go func() {
 		addr, err := net.ResolveTCPAddr(s.Net, fmt.Sprintf("%s:%d", s.Host, s.Port))
 		if err != nil {
@@ -93,13 +93,13 @@ func (s *Server) Start(){
 			if err != nil {
 				continue
 			}
-			connId++
 			connection := NewConnection(connId, s, conn)
 			s.ConnManager.AddConnection(connection)
 			go func() {
 				s.CallOnConnect(connection)
 				connection.Start()
 			}()
+			connId++
 		}
 	}()
 	select {}

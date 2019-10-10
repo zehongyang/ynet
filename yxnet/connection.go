@@ -114,3 +114,8 @@ func (c *Connection) LeaveGroup () {
 func (c *Connection) GetProperty () map[string]interface{} {
 	return c.property
 }
+
+//获取服务
+func (c *Connection) GetTcpServer () iyxnetface.IServer {
+	return c.TcpServer
+}

@@ -6,11 +6,13 @@ import (
 )
 
 type ConnManager struct {
-	ConnMap sync.Map
+	ConnMap *sync.Map
 }
 
 func NewConnManager() *ConnManager {
-	return &ConnManager{}
+	return &ConnManager{
+		ConnMap:new(sync.Map),
+	}
 }
 //新增客户端
 func (c *ConnManager) AddConnection (connection iyxnetface.IConnection)  {
@@ -22,6 +24,6 @@ func (c *ConnManager) RemoveConnection(connection iyxnetface.IConnection){
 }
 
 //获取客户端管理
-func (c *ConnManager) GetConnMap () sync.Map  {
+func (c *ConnManager) GetConnMap () *sync.Map  {
 	return c.ConnMap
 }

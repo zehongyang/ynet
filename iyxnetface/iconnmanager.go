@@ -5,5 +5,5 @@ import "sync"
 type IConnManager interface {
 	AddConnection(IConnection)
 	RemoveConnection(IConnection)
-	GetConnMap() sync.Map
+	GetConnMap() *sync.Map
 }

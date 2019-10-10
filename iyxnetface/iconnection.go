@@ -6,4 +6,9 @@ type IConnection interface {
 	GetConnId() uint64
 	Write([]byte)
 	GetProperty() map[string]interface{}
+	GetTcpServer() IServer
+	BindUid(int)
+	UnBindUid()
+	JoinGroup(int)
+	LeaveGroup()
 }
