@@ -46,8 +46,7 @@ server.Serve()
   "Port":8888,
   "ReadTimeOut":60,
   "WriteTimeOut":10,
-  "ServerName": "ynet",
-  "LogFile":"zinx.log"
+  "ServerName": "ynet"
 }
 ```
 
