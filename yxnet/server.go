@@ -17,7 +17,7 @@ type Server struct {
 	//服务名称
 	ServerName string
 	//服务版本
-	Version float64
+	version float64
 	//tcp
 	Net string
 	//端口
@@ -48,7 +48,7 @@ func init()  {
 		ReadTimeOut:60,
 		WriteTimeOut:10,
 		ServerName:"YNET",
-		Version:1.0,
+		version:1.0,
 		ConnManager:NewConnManager(),
 		TaskQueue:make(map[int]chan iyxnetface.IMessage),
 	}
@@ -75,7 +75,7 @@ func loadConfig()  {
 
 //服务开始
 func (s *Server) Start(){
-	fmt.Printf("Server %s Version %.1f listening on Port %d\n",s.ServerName,s.Version,s.Port)
+	fmt.Printf("Server %s Version %.1f listening on Port %d\n",s.ServerName,s.version,s.Port)
 	go func() {
 		addr, err := net.ResolveTCPAddr(s.Net, fmt.Sprintf("%s:%d", s.Host, s.Port))
 		if err != nil {
