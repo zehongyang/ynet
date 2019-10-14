@@ -1,6 +1,7 @@
 package yxnet
 
 import (
+	"fmt"
 	"net"
 	"time"
 	"ynet/iyxnetface"
@@ -52,17 +53,16 @@ func (c *Connection) startRead ()  {
 //客户端写
 func (c *Connection) startWrite()  {
 	//设置写超时
-	c.Conn.SetWriteDeadline(time.Now().Add(time.Duration(c.TcpServer.GetWriteTimeOut()) * time.Second))
 	for  {
 		select {
 		case msg, ok := <-c.MsgChan:
 			if !ok {
 				return
 			}
+			fmt.Println("connId:",c.ConnId,",msg:",string(msg))
 			if _, err := c.Conn.Write(msg);err != nil{
 				return
 			}
-			c.Conn.SetWriteDeadline(time.Now().Add(time.Duration(c.TcpServer.GetWriteTimeOut()) * time.Second))
 		case <-c.ExitChan:
 			return
 		}

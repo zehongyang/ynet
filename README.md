@@ -45,7 +45,6 @@ server.Serve()
   "Host":"127.0.0.1",
   "Port":8888,
   "ReadTimeOut":60,
-  "WriteTimeOut":10,
   "ServerName": "ynet"
 }
 ```

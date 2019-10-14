@@ -46,7 +46,6 @@ func init()  {
 		Port:8999,
 		Host:"0.0.0.0",
 		ReadTimeOut:60,
-		WriteTimeOut:10,
 		ServerName:"YNET",
 		version:1.0,
 		ConnManager:NewConnManager(),
