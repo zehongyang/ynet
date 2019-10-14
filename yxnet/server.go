@@ -24,8 +24,6 @@ type Server struct {
 	Port uint32
 	//读超时
 	ReadTimeOut int
-	//写超时
-	WriteTimeOut int
 	//host
 	Host string
 	//客户端连接处理
@@ -210,8 +208,4 @@ func (s *Server) SendToAll (msg []byte){
 //获取读超时
 func (s *Server) GetReadTimeOut () int  {
 	return s.ReadTimeOut
-}
-//获取写超时
-func (s *Server) GetWriteTimeOut () int {
-	return s.WriteTimeOut
 }

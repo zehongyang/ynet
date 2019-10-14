@@ -15,5 +15,4 @@ type IServer interface {
 	SendToGroup(int,[]byte)
 	SendToAll([]byte)
 	GetReadTimeOut() int
-	GetWriteTimeOut() int
 }
