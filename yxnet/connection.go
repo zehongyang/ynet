@@ -59,7 +59,6 @@ func (c *Connection) startWrite()  {
 			if !ok {
 				return
 			}
-			fmt.Println("connId:",c.ConnId,",msg:",string(msg))
 			if _, err := c.Conn.Write(msg);err != nil{
 				return
 			}
@@ -88,8 +87,14 @@ func (c *Connection) Stop()  {
 }
 
 //将数据写入客户端管道
-func (c *Connection) Write (msg []byte) {
+func (c *Connection) Write (msg []byte) (err error) {
+	defer func() {
+		if e := recover();e != nil {
+			err = fmt.Errorf("write err:%s",e)
+		}
+	}()
 	c.MsgChan <- msg
+	return
 }
 
 //绑定uid
